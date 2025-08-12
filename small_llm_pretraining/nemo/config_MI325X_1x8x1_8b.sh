@@ -38,14 +38,14 @@ export IMAGE="DUMMY"
 # export ORIGINAL_C4_PATH="/data/data/C4"
 
 # This corresponds to the PREPROCESSED_PATH in README section 3's dataset download part
-export PREPROCESSED_PATH="/data/llama31_8b/data/C4_processed/"
+export PREPROCESSED_PATH="/data/llama31_8b/data/"
 export MERGED_C4_PATH="/data/llama31_8b/data/C4_merged"
 # Dataset: Numpy index working directory, contains shuffled dataset
 # This path must be able to hold >400GB data
 export TMP_NPY_INDEX="/data/npy_indices"
 # Dataset: Tokenizer path
 # This corresponds to the TOKENIZER_PATH in README section 3's tokenizer download part
-export TOKENIZER_PATH="/data/llama31_8b/model/Llama-3.1-8B-ref/"
+export TOKENIZER_PATH="/data/llama31_8b/model/"
 # export TOKENIZER_PATH="/data/llama3_405b_ref/tokenizer"
 
 # Model: checkpoint and tokenizer path
@@ -77,7 +77,7 @@ export SAVE_CKPT=0
 # Model: size, to choose from 8b, 70b, 405b
 export SIZE="8b"
 # Dataloader: Global batch size
-export GBS=128
+export GBS=32
 # Dataloader: Micro batch size
 export MBS=4
 export MAX_LR="5e-4"
