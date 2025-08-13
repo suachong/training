@@ -3,29 +3,19 @@
 Small Language Model pretraining - Llama 3.1 8B
 
 # 2. Directions
-
-
-#### Container setup
-
-To build the container: 
- 
+To build the docker image: 
 ```bash
-docker build -t <tag> -f Dockerfile .
+docker build -t <image-tag> -f Dockerfile .
 ```
 
-To launch the container: 
-
+To launch the docker container: 
 ```
-bash dev/run_docker.sh
+docker run -it --rm \
+    --net=host --uts=host \
+    <image-tag>
 ```
 
-### Steps to download and verify data
-
-The current codebase is using C4 dataset for train and evaluation. Please refer to [Section 3](#preprocessed-data-download) for downloading the preprocessed dataset and [Section 6](#data-preprocessing) if you would like to perform manual tokenization. 
-
-### Steps to run and time
-
-To train Llama 3.1 8B, we need to fill out all fields in [config.sh](./config.sh). This file contains all configurations for Slurm cluster access and job submission configurations, directory mappings, containers, and model configurations. 
+To train Llama 3.1 8B, we need to fill out all fields in `config_XXX.sh`. This file contains all configurations for Slurm cluster access and job submission configurations, directory mappings, containers, and model configurations. 
 
 Once the `config.sh` is properly filled, we run the following code snippet **inside the container**:
 
@@ -34,16 +24,15 @@ source config.sh
 bash run_llama31.sh
 ```
 
-# 3. Dataset/Environment
-### Publication/Attribution
+# 3. Dataset and Model
 
-We use the c4/en/3.0.1 dataset from [HuggingFace/AllenAI](https://huggingface.co/datasets/allenai/c4). 
+The current codebase is using the c4/en/3.0.1 dataset from [HuggingFace/AllenAI](https://huggingface.co/datasets/allenai/c4) for train and evaluation. 
 
-### Preprocessed data download
+<!-- ### Preprocessed data download
 
 The pre-tokenized dataset and the tokenizer are available to download from the S3 bucket. You can download this data from the bucket using RClone as follows: 
 
-To run Rclone on Windows, you can download the executable here. To install Rclone on Linux/macOS/BSD systems, run:
+To run Rclone on Windows, you can download the executable [here](https://rclone.org/install/#windows). To install Rclone on Linux/macOS/BSD systems, run:
 
 ```
 sudo -v ; curl https://rclone.org/install.sh | sudo bash
@@ -55,7 +44,7 @@ Once Rclone is installed, run the following command to authenticate with the buc
 rclone config create mlc-training s3 provider=Cloudflare access_key_id=76ea42eadb867e854061a1806220ee1e secret_access_key=a53625c4d45e3ca8ac0df8a353ea3a41ffc3292aa25259addd8b7dc5a6ce2936 endpoint=https://c2686074cb2caf5cbaf6d134bdba8b47.r2.cloudflarestorage.com
 ```
 
-You can then navigate in the terminal to your desired download directory and run the following commands to download the dataset and checkpoints: 
+You can then navigate in the terminal to your desired download directory and run the following commands to download the dataset and checkpoints: -->
 
 ### Raw data downloading
 
@@ -92,17 +81,13 @@ export N_VALIDATION_SAMPLES=91205
 bash utils/consolidate_data.sh
 ```
 
-
 ### Tokenizer
 
 We are using the Llama 3.1 8B tokenizer. You can run `utils/download_hf_llama3.sh` to download it. 
 
-
 After the data consolidation is done, we can run this [script](./utils/preprocess.sh) to perform preprocessing. To run the preprocessing script, we need to use the following commands: 
 
 ```bash
-# fill in the built container path here
-export CONT_IMAGE_URL=""
 # pass in the folder path that contains the Llama tokenizer here
 # please refer to the tokenizer section above for more details
 export TOKENIZER_PATH=""
@@ -111,8 +96,7 @@ export MERGED_C4_PATH=""
 # this path is used for storing the preprocessed .bin and .idx files
 export PREPROCESSED_PATH=""
 
-# Extra Slurm-related arguments can be provided here
-sbatch utils/preprocess.sh
+bash utils/preprocess.sh
 ```
 
 If you are not using Slurm, then you should go inside the `utils/preprocess.sh` and run the commands manually. 
@@ -186,8 +170,6 @@ We evaluate using **1024** sequences from our customized validation dataset.
 
 
 # 6. Other
-
-
 
 #### Run model conversion
 
