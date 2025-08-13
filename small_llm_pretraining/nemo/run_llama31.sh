@@ -35,7 +35,7 @@ set -e
 : "${TOKENIZER_PATH:?TOKENIZER_PATH not set}"
 
 #     Model settings
-: "${USE_CKPT:?USE_CKPT not set}"
+: "${USE_CKPT:="0"}"
 : "${FROM_HF:?FROM_HF not set}"
 : "${CONTINUAL_CKPT:?CONTINUAL_CKPT not set}"
 
@@ -69,7 +69,7 @@ IFS=" " read -ra seeds <<< $SEEDS
 : "${SAVE_CKPT:=0}"
 : "${TAG:=""}"
 : "${TARGET:="3.3"}"
-: "${STEP_TIME_ATOL:="18000"}" # maximum tolerable step time, setting to 2hr by default
+: "${STEP_TIME_ATOL:="18000"}" # maximum tolerable step time, setting to 5hr by default
 
 # Run
 
