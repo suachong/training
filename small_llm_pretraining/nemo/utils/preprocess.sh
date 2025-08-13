@@ -13,37 +13,22 @@ set -e
 
 container_maps="${TOKENIZER_PATH}:/tokenizer,${MERGED_C4_PATH}:/dataset,${PREPROCESSED_PATH}:/outputs"
 
-# for index in {0..7}; do
-#     srun --nodes=1 --ntasks-per-node=1 \
-#     --container-image=$CONT_IMAGE_URL --container-mounts $container_maps --no-container-entrypoint \
-#     python3 /opt/NeMo/scripts/nlp_language_modeling/preprocess_data_for_megatron.py \
-#     --input "/dataset/c4-train.en_${index}.json.gz" \
-#     --output-prefix "/outputs/c4-train.en_${index}" \
-#     --tokenizer-library huggingface --tokenizer-type /tokenizer \
-#     --dataset-impl mmap --workers 128 &
-# done
-
-# srun --nodes=1 --ntasks-per-node=1 \
-#     --container-image=$CONT_IMAGE_URL --container-mounts $container_maps --no-container-entrypoint \
-#     --output preprocess_outputs/dataset_preprocess_validation.out \
-#     python3 /opt/NeMo/scripts/nlp_language_modeling/preprocess_data_for_megatron.py \
-#     --input "/dataset/c4-validation-91205-samples.en.json.gz" \
-#     --output-prefix "/outputs/c4-validation-91205-samples.en" \
-#     --tokenizer-library huggingface --tokenizer-type /tokenizer \
-#     --dataset-impl mmap --workers 128 & 
-# wait
-
 for index in {0..7}; do
-    python3 /workspace/deps/nemo/scripts/nlp_language_modeling/preprocess_data_for_megatron.py \
-    --input "${MERGED_C4_PATH}/c4-train.en_${index}.json.gz" \
-    --output-prefix "${PREPROCESSED_PATH}/c4-train.en_${index}" \
-    --tokenizer-library huggingface --tokenizer-type ${TOKENIZER_PATH} \
+    srun --nodes=1 --ntasks-per-node=1 \
+    --container-image=$CONT_IMAGE_URL --container-mounts $container_maps --no-container-entrypoint \
+    python3 /opt/NeMo/scripts/nlp_language_modeling/preprocess_data_for_megatron.py \
+    --input "/dataset/c4-train.en_${index}.json.gz" \
+    --output-prefix "/outputs/c4-train.en_${index}" \
+    --tokenizer-library huggingface --tokenizer-type /tokenizer \
     --dataset-impl mmap --workers 128 &
 done
 
-    python3 /workspace/deps/nemo/scripts/nlp_language_modeling/preprocess_data_for_megatron.py \
-    --input "${MERGED_C4_PATH}/c4-validation-91205-samples.en.json.gz" \
-    --output-prefix "${PREPROCESSED_PATH}/c4-validation-91205-samples.en" \
-    --tokenizer-library huggingface --tokenizer-type ${TOKENIZER_PATH} \
+srun --nodes=1 --ntasks-per-node=1 \
+    --container-image=$CONT_IMAGE_URL --container-mounts $container_maps --no-container-entrypoint \
+    --output preprocess_outputs/dataset_preprocess_validation.out \
+    python3 /opt/NeMo/scripts/nlp_language_modeling/preprocess_data_for_megatron.py \
+    --input "/dataset/c4-validation-91205-samples.en.json.gz" \
+    --output-prefix "/outputs/c4-validation-91205-samples.en" \
+    --tokenizer-library huggingface --tokenizer-type /tokenizer \
     --dataset-impl mmap --workers 128 & 
 wait
