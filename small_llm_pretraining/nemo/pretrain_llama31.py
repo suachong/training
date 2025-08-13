@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import os 
 import math
 import argparse
@@ -541,7 +542,7 @@ if __name__ == "__main__":
 
                 try:
                     print ("control C to skip")
-                    login_info = wandb.login()
+                    login_info = wandb.login(host="https://amd.wandb.io")
                     print("WandB is logged in.")
                     pretrain.log.extra_loggers = [
                         run.Config(
