@@ -33,7 +33,7 @@ def barrier():
     dist.barrier()
 
 class MLLogger:
-    def __init__(self, filepath="/mlperf-outputs/mlperf_llama31_405b.log", default_stack_offset=2):
+    def __init__(self, filepath="/mlperf-outputs/mlperf_llama31_8b.log", default_stack_offset=2):
         self.logger = mllog.get_mllogger()
         mllog.config(default_stack_offset=default_stack_offset, filename=filepath)
 

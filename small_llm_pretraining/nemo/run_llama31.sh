@@ -35,8 +35,7 @@ set -e
 : "${TOKENIZER_PATH:?TOKENIZER_PATH not set}"
 
 #     Model settings
-: "${MODEL_CKPT:?MODEL_CKPT not set}"
-: "${USE_CKPT:?USE_CKPT not set}"
+: "${USE_CKPT:="0"}"
 : "${FROM_HF:?FROM_HF not set}"
 : "${CONTINUAL_CKPT:?CONTINUAL_CKPT not set}"
 
@@ -60,7 +59,7 @@ set -e
 : "${START_STEPS:=0}"
 
 #     Dataloader settings
-: "${MAX_STEPS:=""}"
+: "${MAX_STEPS:="1200000"}"
 
 #     Experiment settings
 : "${SEEDS:=""}"
@@ -70,11 +69,11 @@ IFS=" " read -ra seeds <<< $SEEDS
 : "${SAVE_CKPT:=0}"
 : "${TAG:=""}"
 : "${TARGET:="3.3"}"
-: "${STEP_TIME_ATOL:="18000"}" # maximum tolerable step time, setting to 2hr by default
+: "${STEP_TIME_ATOL:="18000"}" # maximum tolerable step time, setting to 5hr by default
 
 # Run
 
-MOUNTS="${JOB_DIR}:/output,${JOB_DIR}:/mlperf-outputs,${PREPROCESSED_PATH}:/preproc_data,${MODEL_CKPT}:/checkpoint,${TOKENIZER_PATH}:/tokenizer,${CONTINUAL_CKPT}:/continual"
+MOUNTS="${JOB_DIR}:/output,${JOB_DIR}:/mlperf-outputs,${PREPROCESSED_PATH}:/preproc_data,${TOKENIZER_PATH}:/tokenizer,${CONTINUAL_CKPT}:/continual"
 
 CKPT_OPTION=""
 
@@ -142,7 +141,6 @@ python3 pretrain_llama31.py \
 --seeds ${seeds[@]} \
 --num_exps $NEXP \
 --num_pars $NPAR \
---initial_ckpt_path $MODEL_CKPT \
 --continual_ckpt_path $CONTINUAL_CKPT \
 --tokenizer_path $TOKENIZER_PATH \
 --target_log_ppl $TARGET \

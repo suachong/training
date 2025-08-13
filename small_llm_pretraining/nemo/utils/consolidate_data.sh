@@ -10,14 +10,6 @@ set -e
 
 # create softlinks to store each shard before merging
 mkdir -p softlinks
-# for shard in {0..7}; do
-#   start=$((shard * 128))
-#   end=$((shard * 128 + 127))
-#   mkdir -p softlinks/en_$shard
-#   for ind in $(seq -f "%05g" $start $end); do
-#     ln -s ${C4_PATH}/c4-train.${ind}-of-01024.json.gz softlinks/en_${shard}/c4-train.${ind}-of-01024.json.gz
-#   done
-# done
 for shard in {0..7}; do
   start=$((shard * 128))
   end=$((shard * 128 + 127))

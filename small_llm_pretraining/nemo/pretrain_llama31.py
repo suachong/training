@@ -40,41 +40,12 @@ def local_executor(
         "TRANSFORMERS_OFFLINE": "1",
         "TORCH_NCCL_AVOID_RECORD_STREAMS": "1",
         "NCCL_NVLS_ENABLE": "0",
+        "NVTE_DP_AMAX_REDUCE_INTERVAL": "0",
+        "NVTE_ASYNC_AMAX_REDUCTION": "1",
+        "NVTE_FUSED_ATTN": "1",
         "TOKENIZERS_PARALLELISM": "false",
-        "NCCL_MIN_P2P_NCHANNELS" : "32",
-        "NCCL_MIN_CTAS" : "32",
-        "NCCL_NCHANNELS_PER_NET_PEER" : "32",
-        "CUBLAS_FORCE_XMMA_KERNEL_INIT" : "DEVICE",
-        "NVTE_RS_STRIDED_ATOMIC" : "2",
-        "NVTE_FP8_DPA_BWD" : "1",
-        "NVTE_FUSED_ATTN" : "1",
-        "NVTE_FUSED_ATTN_CK" : "1",
-        "NVTE_FUSED_ATTN_AOTRITON" : "1",
-        "NVTE_DEBUG" : "0",
-        "NVTE_DEBUG_LEVEL" : "0",
-        "NVTE_USE_HIPBLASLT" : "1",
-        "NVTE_USE_CAST_TRANSPOSE_TRITON" : "0",
-        "NVTE_USE_OPTIMIZED_HIPIFIED_CAST_TRANSPOSE" : "1",
-        "USE_TE_SWIGLU" : "1",
-        "NVTE_CK_USES_BWD_V3" : "1",        # enable dqdkdv bwd kernel
-        "NVTE_CK_V3_BF16_CVT" : "1",        # Use Round to away from ZERO for numerical stability
-        "CK_FUSED_ATTN_LOG_CONFIG" : "0",   # Diable logging for CK fused attn. Enabled for debugging only
-        "NVTE_CK_IS_V3_ATOMIC_FP32" : "0",  # 16bit atomics
-        "NVTE_CK_HOW_V3_BF16_CVT" : "2",
-        "NVTE_CK_USES_FWD_V3" : "1",
-        "CUDNN_FRONTEND_ATTN_DP_WORKSPACE_LIMIT" : "0",
-        "CUDA_DEVICE_MAX_CONNECTIONS" : "1",
-        "FUSED_SOFTMAX" : "0",
-        "RMSNORM_CAST" : "0",
-        "PT_TENSOR_VALIDATION" : "0",
-        "USE_HIPBLASLT" : "1",
-        "TORCH_BLAS_PREFER_HIPBLASLT" : "1",
-        "NVTE_USE_RMSNORM_TRITON" : "1",
-        "ENABLE_TRANSPOSE_CACHE" : "0",
-        "NVTE_UNFUSED_FP8_UPDATE": "1",
-        # "NVTE_DP_AMAX_REDUCE_INTERVAL": "0",
-        # "NVTE_ASYNC_AMAX_REDUCTION": "1",
     }
+
     if custom_env_vars:
         env_vars |= custom_env_vars
 
@@ -204,7 +175,7 @@ def get_pretrain(
     pretrain.trainer.plugins = precision
 
     # sets up everything else
-    pretrain.trainer.max_steps = 1200000 # Hardcoded to fix max_steps for this benchmark 
+    pretrain.trainer.max_steps = int (os.getenv ("MAX_STEPS")) #1200000 # Hardcoded to fix max_steps for this benchmark 
 
     pretrain.data = data_module
     pretrain.trainer.val_check_interval = eval_every / int (os.getenv ("GBS"))
@@ -260,7 +231,7 @@ def get_data(
         llm.PreTrainingDataModule,
         tokenizer=tokenizer,
         paths=data_paths,
-        num_workers=128, # TODO: make it configurable
+        num_workers=128, 
         seq_length=seq_length,
         global_batch_size=gbs,
         micro_batch_size=mbs,
@@ -333,10 +304,10 @@ def get_parser() -> argparse.ArgumentParser:
     data_group.add_argument("--gbs", type=int, default=1152, help="Global batch size, should be divisible by PP")
     data_group.add_argument("--mbs", type=int, default=1, help="Micro batch size")
     data_group.add_argument("--max_lr", type=float, default=1e-4, help="Peak learning rate. Min LR will be 0.1 of max_lr")
-    data_group.add_argument("--eval_every", type=int, default=46080, help="Evaluate at least every N training sequences")
-    data_group.add_argument("--start_eval_at", type=int, default=None, help="Start evaluation at N training sequences")
+    data_group.add_argument("--eval_every", type=int, default=12288, help="Evaluate at least every N training sequences")
+    data_group.add_argument("--start_eval_at", type=int, default=0, help="Start evaluation at N training sequences")
     data_group.add_argument("--eval_tokens", type=int, default=1024, help="Evaluate using at least N evaluation sequences")
-    data_group.add_argument('--max_steps', type=int, default=None, help="Maximum number of steps that each experiment partition will train on. None means no restriction on max steps. ")
+    data_group.add_argument('--max_steps', type=int, default=1200000, help="Maximum number of steps that each experiment partition will train on. None means no restriction on max steps. ")
     data_group.add_argument('--warmup_steps', type=int, default=None, help="Number of steps for LR warmup")
     data_group.add_argument("--use_full_dataset", action="store_true", help="If set, then we use the full dataset, instead of the last 256/1024 shards")
     data_group.add_argument("--tokenizer_path", type=str, help="Tokenizer path that's used to tokenize the dataset")
@@ -396,7 +367,7 @@ if __name__ == "__main__":
 
     eval_every_n_batches = math.ceil(args.eval_every / (args.gbs))
     eval_batches = math.ceil(args.eval_tokens / (args.gbs))
-    if args.start_eval_at is not None:
+    if args.start_eval_at == 0:
         start_eval_at = math.ceil(args.start_eval_at / args.gbs)
     else:
         start_eval_at = eval_every_n_batches

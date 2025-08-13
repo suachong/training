@@ -1,16 +1,24 @@
-# Copyright (c) 2024, NVIDIA CORPORATION.  All rights reserved.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Copyright (c) 2025, Advanced Micro Devices, Inc. All rights reserved.
+
+# MIT License
+
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 # SSH: username that connects to the remote cluster
 export USER="DUMMY"
@@ -38,7 +46,7 @@ export IMAGE="DUMMY"
 # export ORIGINAL_C4_PATH="/data/data/C4"
 
 # This corresponds to the PREPROCESSED_PATH in README section 3's dataset download part
-export PREPROCESSED_PATH="/data/llama31_8b/data/C4_processed/"
+export PREPROCESSED_PATH="/data/llama31_8b/data/C4_processed"
 export MERGED_C4_PATH="/data/llama31_8b/data/C4_merged"
 # Dataset: Numpy index working directory, contains shuffled dataset
 # This path must be able to hold >400GB data
@@ -48,12 +56,6 @@ export TMP_NPY_INDEX="/data/npy_indices"
 export TOKENIZER_PATH="/data/llama31_8b/model/Llama-3.1-8B-ref/"
 # export TOKENIZER_PATH="/data/llama3_405b_ref/tokenizer"
 
-# Model: checkpoint and tokenizer path
-#     This is the checkpoint that we want to start with. 
-#     Each checkpoint should be a folder containing two sub-folders: context and weights. 
-#     And we need to pass this folder's path (the folder containing context and weights) here.  
-export MODEL_CKPT="/data/llama31_8b/model/Llama-3.1-8B-ref/"
-# export MODEL_CKPT="None"
 # Model: Continual checkpoint directory to write and resume
 #     This is the directory to hold all intermediate checkpoints. 
 #     Once a run is complete and we specify to save checkpoints, 
@@ -71,20 +73,18 @@ export FROM_HF=1
 # Model: Whether we want to save a checkpoint. Must be 1 if NPAR > 1. If 1, then we save a checkpoint at the end.
 export SAVE_CKPT=0
 
-
-
 # Training Configs: 
 # Model: size, to choose from 8b, 70b, 405b
 export SIZE="8b"
 # Dataloader: Global batch size
-export GBS=128
+export GBS=32
 # Dataloader: Micro batch size
 export MBS=4
 export MAX_LR="5e-4"
 # Dataloader: Max run N batches, optional
 #     If an empty string is provided (""), then the training will continue until time limit
 #     If we want to save a checkpoint, then this value must be set
-# export MAX_STEPS=1200000 # Fixed max_steps=1200000 in pretrain_llama31.py  
+# Fixed max_steps=1200000 in pretrain_llama31.py  
 export WARMUP_STEPS=512 # 16384 // GBS
 export EVAL_EVERY=12288
 export START_EVAL_AT=0
@@ -104,6 +104,6 @@ export NPAR=1
 #     The training script will discard all excessive seeds, and generate seeds if given seeds < NEXP. 
 #     To preserve randomness, we recommend not to set this value so that each time seeds can be randomly generated. 
 # export SEEDS=7963
-# export SEEDS=1234
+# export SEEDS=4786
 
 export DGXSYSTEM=$(basename $(readlink -f ${BASH_SOURCE[0]}) | sed 's/^config_//' | sed 's/\.sh$//' )
