@@ -176,7 +176,7 @@ def get_pretrain(
     pretrain.trainer.plugins = precision
 
     # sets up everything else
-    pretrain.trainer.max_steps = int (os.getenv ("MAX_STEPS")) #1200000 # Hardcoded to fix max_steps for this benchmark 
+    pretrain.trainer.max_steps = max_steps #1200000 # Hardcoded to fix max_steps for this benchmark 
 
     pretrain.data = data_module
     pretrain.trainer.val_check_interval = eval_every / int (os.getenv ("GBS"))
