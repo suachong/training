@@ -60,7 +60,7 @@ set -e
 : "${START_STEPS:=0}"
 
 #     Dataloader settings
-: "${MAX_STEPS:=""}"
+: "${MAX_STEPS:="1200000"}"
 
 #     Experiment settings
 : "${SEEDS:=""}"
