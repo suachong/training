@@ -52,23 +52,16 @@ We use [AllenAI C4](https://huggingface.co/datasets/allenai/c4) dataset for this
 
 
 ```bash
-export ORIGINAL_C4_PATH=""
+export C4_PATH=""
 
 # download the full C4 files, including all raw train and validations
-rclone copy mlc-training:mlcommons-training-wg-public/common/datasets/c4/original/en_json/3.0.1 $ORIGINAL_C4_PATH -P
+rclone copy mlc-training:mlcommons-training-wg-public/common/datasets/c4/original/en_json/3.0.1 $C4_PATH -P
 ```
-After the download is complete, you should see files with the following naming conventions under `PREPROCESSED_PATH`, ending with both `.idx` and `.bin`: 
-- Training partitions: `c4-train.en_<number>_text_document`
-- Validation partitions: `c4-validation-91205-samples.en_text_document`
-
-### Run data preprocessing
-
 After downloading, run the following command to process them to zip them into `.gz` format before running the data preprocessing. 
 
 ```
 bash utils/parallel_compress_json_to_gz.sh
 ```
-
 
 Run the following commands to merge all 1024 training files into 8 `json.gz` files, all 8 validation files into a single `json.gz` file, as well as generate our customized validation dataset. Each of the `json.gz` files will subsequently be preprocessed into a pair of megatron dataset files (`.bin` and `.idx`) by our preprocess.sh script. 
 
@@ -82,7 +75,6 @@ bash utils/consolidate_data.sh
 ```
 
 ### Tokenizer
-
 We are using the Llama 3.1 8B tokenizer. You can run `utils/download_hf_llama3.sh` to download it. 
 
 After the data consolidation is done, we can run this [script](./utils/preprocess.sh) to perform preprocessing. To run the preprocessing script, we need to use the following commands: 
@@ -96,13 +88,27 @@ export MERGED_C4_PATH=""
 # this path is used for storing the preprocessed .bin and .idx files
 export PREPROCESSED_PATH=""
 
-bash utils/preprocess.sh
+for index in {0..7}; do
+    # please specify the right path to nemo
+    python3 </path/to/nemo>/nemo/scripts/nlp_language_modeling/preprocess_data_for_megatron.py \
+    --input "${MERGED_C4_PATH}/c4-train.en_${index}.json.gz" \
+    --output-prefix "${PREPROCESSED_PATH}/c4-train.en_${index}" \
+    --tokenizer-library huggingface --tokenizer-type ${TOKENIZER_PATH} \
+    --dataset-impl mmap --workers 128 &
+done
+    # please specify the right path to nemo
+    python3 </path/to/nemo>/nemo/scripts/nlp_language_modeling/preprocess_data_for_megatron.py \
+    --input "${MERGED_C4_PATH}/c4-validation-91205-samples.en.json.gz" \
+    --output-prefix "${PREPROCESSED_PATH}/c4-validation-91205-samples.en" \
+    --tokenizer-library huggingface --tokenizer-type ${TOKENIZER_PATH} \
+    --dataset-impl mmap --workers 128 & 
+wait
+
 ```
 
-If you are not using Slurm, then you should go inside the `utils/preprocess.sh` and run the commands manually. 
-
-Warning! If you receive an error message of file not found, look into where `preprocess_data_for_megatron.py` is located in your path. 
-
+After the download is complete, you should see files with the following naming conventions under `PREPROCESSED_PATH`, ending with both `.idx` and `.bin`: 
+- Training partitions: `c4-train.en_<number>_text_document`
+- Validation partitions: `c4-validation-91205-samples.en_text_document`
 
 #### Training and test data separation
 
@@ -143,13 +149,12 @@ The model largely follows the Llama 3.1 8B [paper](https://arxiv.org/abs/2407.21
 
 #### Saving and restoring a checkpoint
 
-Large runs might need to span across multiple Slurm jobs, and we need to save and load checkpoints with contexts so that training can resume between jobs. To support this, we have added some environment variables. Please refer to `config.sh` for more details. 
+Large runs might need to span across multiple Slurm jobs, and we need to save and load checkpoints with contexts so that training can resume between jobs. To support this, we have added some environment variables. Please refer to `config_XXX.sh` for more details. 
 
 ### Optimizer spec
 
 1. Optimizer type: **AdamW**
 2. Warmup steps computed as 10% of the total allocated steps.
-3. LR Scheduler's maximum number of steps can be configured in the `config.json`. 
 
 # 5. Quality
 ### Quality metric
@@ -169,7 +174,7 @@ We perform evaluation every **12288** sequences.
 We evaluate using **1024** sequences from our customized validation dataset. 
 
 
-# 6. Other
+<!-- # 6. Other
 
 #### Run model conversion
 
@@ -189,4 +194,4 @@ export DST_PATH=""
 sbatch launch_nemo_convert.sh
 ```
 
-After the model conversion is done, we can then set `MODEL_CKPT=$DST_PATH` together with `FROM_HF=1` when launching our job, so that we can resume training from the converted HF checkpoint. 
+After the model conversion is done, we can then set `MODEL_CKPT=$DST_PATH` together with `FROM_HF=1` when launching our job, so that we can resume training from the converted HF checkpoint.  -->
