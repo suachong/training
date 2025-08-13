@@ -2,7 +2,7 @@
 
 Small Language Model pretraining - Llama 3.1 8B
 
-# 2. Directions
+# 2. Docker Setup
 To build the docker image: 
 ```bash
 docker build -t <image-tag> -f Dockerfile .
@@ -15,14 +15,6 @@ docker run -it --rm \
     <image-tag>
 ```
 
-To train Llama 3.1 8B, we need to fill out all fields in `config_XXX.sh`. This file contains all configurations for Slurm cluster access and job submission configurations, directory mappings, containers, and model configurations. 
-
-Once the `config.sh` is properly filled, we run the following code snippet **inside the container**:
-
-```bash
-source config.sh
-bash run_llama31.sh
-```
 
 # 3. Dataset and Model
 
@@ -75,9 +67,14 @@ bash utils/consolidate_data.sh
 ```
 
 ### Tokenizer
-We are using the Llama 3.1 8B tokenizer. You can run `utils/download_hf_llama3.sh` to download it. 
+We are using the Llama 3.1 8B tokenizer. To download it, you can run the following commands:
+```bash
+export TOKENIZER_PATH=""
+huggingface-cli login
+huggingface-cli download meta-llama/Llama-3.1-8B  --local-dir $TOKENIZER_PATH
+```
 
-After the data consolidation is done, we can run this [script](./utils/preprocess.sh) to perform preprocessing. To run the preprocessing script, we need to use the following commands: 
+After the data consolidation is done, we can perform preprocessing using the following commands: 
 
 ```bash
 # pass in the folder path that contains the Llama tokenizer here
@@ -149,7 +146,7 @@ The model largely follows the Llama 3.1 8B [paper](https://arxiv.org/abs/2407.21
 
 #### Saving and restoring a checkpoint
 
-Large runs might need to span across multiple Slurm jobs, and we need to save and load checkpoints with contexts so that training can resume between jobs. To support this, we have added some environment variables. Please refer to `config_XXX.sh` for more details. 
+Large runs might need to span across multiple Slurm jobs, and we need to save and load checkpoints with contexts so that training can resume between jobs. To support this, we have added some environment variables. Please refer to `config.sh` for more details. 
 
 ### Optimizer spec
 
@@ -173,6 +170,16 @@ We perform evaluation every **12288** sequences.
 
 We evaluate using **1024** sequences from our customized validation dataset. 
 
+# 6. Launch a training run
+
+To train Llama 3.1 8B, we need to fill out all fields in `config.sh`. This file contains all configurations for Slurm cluster access and job submission configurations, directory mappings, containers, and model configurations. 
+
+Once the `config.sh` is properly filled, we launch a training run using the following commands:
+
+```bash
+source config.sh
+bash run_llama31.sh
+```
 
 <!-- # 6. Other
 
