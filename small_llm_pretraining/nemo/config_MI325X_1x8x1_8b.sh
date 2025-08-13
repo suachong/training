@@ -84,7 +84,7 @@ export MAX_LR="5e-4"
 # Dataloader: Max run N batches, optional
 #     If an empty string is provided (""), then the training will continue until time limit
 #     If we want to save a checkpoint, then this value must be set
-export MAX_STEPS=10 # Fixed max_steps=1200000 in pretrain_llama31.py  
+# Fixed max_steps=1200000 in pretrain_llama31.py  
 export WARMUP_STEPS=512 # 16384 // GBS
 export EVAL_EVERY=12288
 export START_EVAL_AT=0
