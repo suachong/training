@@ -48,12 +48,6 @@ export TMP_NPY_INDEX="/data/npy_indices"
 export TOKENIZER_PATH="/data/llama31_8b/model/Llama-3.1-8B-ref/"
 # export TOKENIZER_PATH="/data/llama3_405b_ref/tokenizer"
 
-# Model: checkpoint and tokenizer path
-#     This is the checkpoint that we want to start with. 
-#     Each checkpoint should be a folder containing two sub-folders: context and weights. 
-#     And we need to pass this folder's path (the folder containing context and weights) here.  
-export MODEL_CKPT="/data/llama31_8b/model/Llama-3.1-8B-ref/"
-# export MODEL_CKPT="None"
 # Model: Continual checkpoint directory to write and resume
 #     This is the directory to hold all intermediate checkpoints. 
 #     Once a run is complete and we specify to save checkpoints, 

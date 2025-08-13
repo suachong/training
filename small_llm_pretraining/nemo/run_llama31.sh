@@ -35,7 +35,6 @@ set -e
 : "${TOKENIZER_PATH:?TOKENIZER_PATH not set}"
 
 #     Model settings
-: "${MODEL_CKPT:?MODEL_CKPT not set}"
 : "${USE_CKPT:?USE_CKPT not set}"
 : "${FROM_HF:?FROM_HF not set}"
 : "${CONTINUAL_CKPT:?CONTINUAL_CKPT not set}"
@@ -74,7 +73,7 @@ IFS=" " read -ra seeds <<< $SEEDS
 
 # Run
 
-MOUNTS="${JOB_DIR}:/output,${JOB_DIR}:/mlperf-outputs,${PREPROCESSED_PATH}:/preproc_data,${MODEL_CKPT}:/checkpoint,${TOKENIZER_PATH}:/tokenizer,${CONTINUAL_CKPT}:/continual"
+MOUNTS="${JOB_DIR}:/output,${JOB_DIR}:/mlperf-outputs,${PREPROCESSED_PATH}:/preproc_data,${TOKENIZER_PATH}:/tokenizer,${CONTINUAL_CKPT}:/continual"
 
 CKPT_OPTION=""
 
@@ -142,7 +141,6 @@ python3 pretrain_llama31.py \
 --seeds ${seeds[@]} \
 --num_exps $NEXP \
 --num_pars $NPAR \
---initial_ckpt_path $MODEL_CKPT \
 --continual_ckpt_path $CONTINUAL_CKPT \
 --tokenizer_path $TOKENIZER_PATH \
 --target_log_ppl $TARGET \
