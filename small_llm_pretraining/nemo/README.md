@@ -1,25 +1,3 @@
-<!-- # Copyright (c) 2025, Advanced Micro Devices, Inc. All rights reserved.
-
-# MIT License
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE. -->
-
 # 1. Problem 
 
 Small Language Model pretraining - Llama 3.1 8B
@@ -202,25 +180,3 @@ Once the `config.sh` is properly filled, we launch a training run using the foll
 source config.sh
 bash run_llama31.sh
 ```
-
-<!-- # 6. Other
-
-#### Run model conversion
-
-Assuming that we have downloaded the HuggingFace checkpoint to a `<SRC_PATH>` directory, we can run [this script](./utils/launch_nemo_convert.sh) (which calls [this python script](./utils/nemo_convert.py)) to perform checkpoint format conversion. After such conversion is done, you should be able to find the converted checkpoint under `<DST_PATH>` directory, and there should be two subfolders inside this directory - `context` and `weights`. 
-
-```bash
-# fill in the built container path here
-export CONT_IMAGE_URL=""
-# fill in the folder that holds the HF checkpoint here
-# under this folder, you should see a lot of safetensors
-export SRC_PATH=""
-# fill in the destination folder of your choice here
-# after conversion is done, you can find context and weights under this path
-export DST_PATH=""
-
-# Extra Slurm-related arguments can be provided here
-sbatch launch_nemo_convert.sh
-```
-
-After the model conversion is done, we can then set `MODEL_CKPT=$DST_PATH` together with `FROM_HF=1` when launching our job, so that we can resume training from the converted HF checkpoint.  -->
