@@ -42,7 +42,6 @@ def local_executor(
         "NCCL_NVLS_ENABLE": "0",
         "NVTE_DP_AMAX_REDUCE_INTERVAL": "0",
         "NVTE_ASYNC_AMAX_REDUCTION": "1",
-        "NVTE_FUSED_ATTN": "1",
         "TOKENIZERS_PARALLELISM": "false",
     }
 
