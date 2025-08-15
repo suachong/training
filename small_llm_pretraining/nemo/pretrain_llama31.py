@@ -317,7 +317,7 @@ def get_parser() -> argparse.ArgumentParser:
     experiment_group.add_argument("--seeds", type=int, nargs="*", default=[], help="random seeds")
     experiment_group.add_argument("--num_exps", type=int, default=1)
     experiment_group.add_argument("--num_pars", type=int, default=1)
-    experiment_group.add_argument("--target_log_ppl", type=float, default=5.6)
+    experiment_group.add_argument("--target_log_ppl", type=float, default=3.3)
     experiment_group.add_argument("--step_time_atol", type=int, default=1600, help="train step time atol")
 
     return parser
