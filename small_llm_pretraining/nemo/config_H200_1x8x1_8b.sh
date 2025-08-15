@@ -48,12 +48,6 @@ export TMP_NPY_INDEX="/data/npy_indices"
 export TOKENIZER_PATH="/data/llama3_8b/model/Llama-3.1-8B"
 # export TOKENIZER_PATH="/data/llama3_405b_ref/tokenizer"
 
-# Model: checkpoint and tokenizer path
-#     This is the checkpoint that we want to start with. 
-#     Each checkpoint should be a folder containing two sub-folders: context and weights. 
-#     And we need to pass this folder's path (the folder containing context and weights) here.  
-export MODEL_CKPT="/data/llama3_8b/model/Llama-3.1-8B_nemo"
-# export MODEL_CKPT="None"
 # Model: Continual checkpoint directory to write and resume
 #     This is the directory to hold all intermediate checkpoints. 
 #     Once a run is complete and we specify to save checkpoints, 
@@ -63,15 +57,8 @@ export MODEL_CKPT="/data/llama3_8b/model/Llama-3.1-8B_nemo"
 #     which is the "actual checkpoint". 
 #     Notice that this path must be able to hold at least 5.2TB data since each checkpoint is 5.2TB. 
 export CONTINUAL_CKPT="/data/model/saved_ckpts"
-# Model: Whether we want to restore from MODEL_CKPT path. If 0, then we are not restoring. 
-export USE_CKPT=0
-# Model: Whether we are resuming from a NeMo-formatted HuggingFace checkpoint (weights only). 
-#     If set to 1, then checkpoint resuming code will not try to load the optimizer states. 
-export FROM_HF=1
 # Model: Whether we want to save a checkpoint. Must be 1 if NPAR > 1. If 1, then we save a checkpoint at the end.
 export SAVE_CKPT=0
-
-
 
 # Training Configs: 
 # Model: size, to choose from 8b, 70b, 405b
@@ -104,6 +91,5 @@ export NPAR=1
 # Experiment manager: provides seeds to the launched experiments, use space as delimiter, such as "1234 1235 1236"
 #     The training script will discard all excessive seeds, and generate seeds if given seeds < NEXP. 
 #     To preserve randomness, we recommend not to set this value so that each time seeds can be randomly generated. 
-
 
 export DGXSYSTEM=$(basename $(readlink -f ${BASH_SOURCE[0]}) | sed 's/^config_//' | sed 's/\.sh$//' )

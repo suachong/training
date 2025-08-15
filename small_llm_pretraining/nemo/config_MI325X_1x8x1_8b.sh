@@ -110,3 +110,51 @@ export NPAR=1
 # export SEEDS=4786
 
 export DGXSYSTEM=$(basename $(readlink -f ${BASH_SOURCE[0]}) | sed 's/^config_//' | sed 's/\.sh$//' )
+
+# Extra configs 
+export NCCL_MIN_P2P_NCHANNELS=32;
+export NCCL_MIN_CTAS=32;
+export NCCL_NCHANNELS_PER_NET_PEER=32;
+export NCCL_NVLS_ENABLE=0
+
+export TP_COMM_OVERLAP=False 
+export MC_TP_OVERLAP_AG=False
+export MC_TP_OVERLAP_RS=False
+export MC_TP_OVERLAP_RS_DGRAD=False
+
+export CUBLAS_FORCE_XMMA_KERNEL_INIT=DEVICE
+
+export NVTE_RS_STRIDED_ATOMIC=2
+export NVTE_FP8_DPA_BWD=1
+export NVTE_FUSED_ATTN=1
+export NVTE_FUSED_ATTN_CK=1
+export NVTE_FUSED_ATTN_AOTRITON=1
+export NVTE_DEBUG=0
+export NVTE_DEBUG_LEVEL=0
+export NVTE_USE_HIPBLASLT=1
+export NVTE_USE_CAST_TRANSPOSE_TRITON=1
+export NVTE_USE_OPTIMIZED_HIPIFIED_CAST_TRANSPOSE=0
+export USE_TE_SWIGLU=1
+
+# FAv3
+export NVTE_CK_USES_BWD_V3=1        # enable dqdkdv bwd kernel
+export NVTE_CK_USES_FWD_V3=1
+export NVTE_CK_IS_V3_ATOMIC_FP32=0  # 16bit atomics
+
+# ck logging
+export CK_FUSED_ATTN_LOG_CONFIG=0   # Diable logging for CK fused attn. Enabled for debugging onl
+
+export CUDNN_FRONTEND_ATTN_DP_WORKSPACE_LIMIT=0
+export CUDA_DEVICE_MAX_CONNECTIONS=1
+
+export FUSED_SOFTMAX=0
+export RMSNORM_CAST=0
+
+export PT_TENSOR_VALIDATION=0
+export PROFILE_RPD=0
+
+export USE_HIPBLASLT=1
+export TORCH_BLAS_PREFER_HIPBLASLT=1
+
+export NVTE_USE_RMSNORM_TRITON=1
+export ENABLE_TRANSPOSE_CACHE=0
