@@ -83,32 +83,6 @@ RUN git clone --recursive https://github.com/ROCm/TransformerEngine.git \
     && sed -i '/.*\"window_size should be.*/d' /workspace/deps/TransformerEngine/transformer_engine/common/fused_attn_rocm/fused_attn.cpp \
     && NVTE_FUSED_ATTN_AOTRITON=0 NVTE_ROCM_ARCH='gfx942' NVTE_FRAMEWORK='pytorch' NVTE_USE_HIPBLASLT=1 MAX_JOBS=128 PYTORCH_ROCM_ARCH='gfx942' GPU_ARCHS='gfx942' pip install  -e .
 
-# Install hipBLASLt (FP8 tuned gemms - second round)
- RUN git clone https://github.com/ROCm/hipBLASLt.git \
-     && cd hipBLASLt && git checkout ebc770851dfb99a1bbb8ef2e5873c753f8011a47 \
-     && sudo apt-get update \
-     && apt install -y python3.10-venv \
-     && ./install.sh -idc -a gfx942
-
-# RPD
-RUN sudo apt-get update && \
-    apt --fix-broken install -y && \
-    apt-get install -y\
-    sqlite3 libsqlite3-dev \
-    libfmt-dev
-
-RUN git clone https://github.com/ROCmSoftwarePlatform/rocmProfileData \
-    && cd rocmProfileData \
-    && cd rocpd_python \
-    && python3 setup.py bdist_wheel \
-    && pip install dist/*.whl \
-    && cd .. \
-    && cd rpd_tracer \
-    && python3 setup.py bdist_wheel \
-    && pip3 install dist/*.whl \
-    && cd .. \
-    && make; make install
-
 WORKDIR /workspace/code
 
 # Copy the current state of the code inside the image
