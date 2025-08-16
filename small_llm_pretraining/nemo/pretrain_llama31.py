@@ -535,41 +535,43 @@ if __name__ == "__main__":
                         ]
                     )
 
-                    if args.save_ckpt:
-                        pretrain.log.ckpt.every_n_train_steps = experiment_max_steps
-                        pretrain.log.ckpt.save_on_train_epoch_end = False
+                #     if args.save_ckpt:
+                #         pretrain.log.ckpt.every_n_train_steps = experiment_max_steps
+                #         pretrain.log.ckpt.save_on_train_epoch_end = False
 
-                try:
-                    print ("control C to skip")
-                    login_info = wandb.login(host="https://amd.wandb.io")
-                    print("WandB is logged in.")
+                # try:
+                #     print ("control C to skip")
+                #     login_info = wandb.login(host="https://amd.wandb.io")
+                #     print("WandB is logged in.")
+                #     pretrain.log.extra_loggers = [
+                #         run.Config(
+                #             WandbLogger,
+                #             project='llama3.1_8b_training', 
+                #             name=f'{checkpoint_name}-gbs={args.gbs}-lr={pretrain.optim.config.lr}', 
+
+                #         ),
+                #     ]
+                # except:
+                #     print("WandB is NOT logged in.")
                     pretrain.log.extra_loggers = [
                         run.Config(
-                            WandbLogger,
-                            project='llama3.1_8b_training', 
-                            name=f'{checkpoint_name}-gbs={args.gbs}-lr={pretrain.optim.config.lr}', 
-
-                        ),
-                    ]
-                except:
-                    print("WandB is NOT logged in.")
-                    pretrain.log.extra_loggers = [
-                        run.Config(
-                            MetricsLogger,
+                            MetricsLogger, 
                             init_global_step=start_step,
                             global_batch_size=args.gbs,
                             seq_length=8192,
                             target_log_ppl=args.target_log_ppl,
                             train_step_time_atol=args.step_time_atol,
-                        ),
+                        ), 
                     ]
+
                     if args.save_ckpt:
                         pretrain.log.ckpt.every_n_train_steps = experiment_max_steps
                         pretrain.log.ckpt.save_on_train_epoch_end = False
+
                 experiment_read_from_path = experiment_write_to_path + "/checkpoint"
 
                 exp.add(
-                    pretrain, executor=executor,
+                    pretrain, executor=executor, 
                     name=f"{exp_name}_{j}_{starting_steps}{ending_steps}",
                     plugins=run_plugins
                 )

@@ -17,6 +17,7 @@
 from mlperf_logging import mllog
 from mlperf_logging.mllog import constants
 import torch.distributed as dist
+import os
 
 def is_dist_avail_and_initialized():
     return (dist.is_available() and dist.is_initialized())
@@ -33,8 +34,10 @@ def barrier():
     dist.barrier()
 
 class MLLogger:
-    def __init__(self, filepath="/mlperf-outputs/mlperf_llama31_8b.log", default_stack_offset=2):
+    def __init__(self, filepath="/outputs/mlperf_llama31_8b_.log", default_stack_offset=2):
         self.logger = mllog.get_mllogger()
+        run_id = os.getenv("RUN_ID")
+        filepath = f"/outputs/mlperf_llama31_3b_{run_id}.log"
         mllog.config(default_stack_offset=default_stack_offset, filename=filepath)
 
     def start(self, **kwargs):
@@ -187,7 +190,6 @@ class MLPerfCallback(pl.Callback):
     def on_train_epoch_start(self, trainer, pl_module):
         mllogger.start(key=constants.EPOCH_START, metadata={constants.SAMPLES_COUNT: self.consumed_samples(trainer)})
         mllogger.start(key=constants.BLOCK_START, metadata={constants.SAMPLES_COUNT: self.consumed_samples(trainer)})
-
         return super().on_train_epoch_start(trainer, pl_module)
     
     @rank_zero_only
@@ -207,11 +209,11 @@ class MLPerfCallback(pl.Callback):
         mllogger.end(key=constants.BLOCK_STOP, metadata={constants.SAMPLES_COUNT: self.consumed_samples(trainer)})
         mllogger.start(key=constants.EVAL_START, metadata={constants.SAMPLES_COUNT: self.consumed_samples(trainer)})
 
-    
     def on_validation_start(self, trainer, pl_module):
         trainer.val_check_interval = self.eval_every
         trainer.val_check_batch = self.eval_every
         self.log_eval_start(trainer, pl_module)
+        return super().on_validation_start(trainer, pl_module)
 
     def on_validation_end(self, trainer, pl_module):
         mllogger.end(key=constants.EVAL_STOP, metadata={constants.SAMPLES_COUNT: self.consumed_samples(trainer)})

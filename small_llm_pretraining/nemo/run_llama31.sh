@@ -71,8 +71,9 @@ IFS=" " read -ra seeds <<< $SEEDS
 : "${TARGET:="3.3"}"
 : "${STEP_TIME_ATOL:="18000"}" # maximum tolerable step time, setting to 5hr by default
 
-# Run
 
+# Run
+export RUN_ID="$(date -u +%Y%m%dT%H%M%S_${HOSTNAME%%.*})"
 MOUNTS="${JOB_DIR}:/output,${JOB_DIR}:/mlperf-outputs,${PREPROCESSED_PATH}:/preproc_data,${TOKENIZER_PATH}:/tokenizer,${CONTINUAL_CKPT}:/continual"
 
 CKPT_OPTION=""
