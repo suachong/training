@@ -535,9 +535,9 @@ if __name__ == "__main__":
                         ]
                     )
 
-                #     if args.save_ckpt:
-                #         pretrain.log.ckpt.every_n_train_steps = experiment_max_steps
-                #         pretrain.log.ckpt.save_on_train_epoch_end = False
+                    if args.save_ckpt:
+                        pretrain.log.ckpt.every_n_train_steps = experiment_max_steps
+                        pretrain.log.ckpt.save_on_train_epoch_end = False
 
                 # try:
                 #     print ("control C to skip")
