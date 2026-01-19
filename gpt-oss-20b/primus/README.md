@@ -58,11 +58,12 @@ sudo chmod -R 777 $LOGDIR
 
 ## Set Configuration
 
-Set appropriate configuration and system-specific hyperparameters:
+Set appropriate configuration and system-specific hyperparameters based on hardware type:
 
 | Config File | System | GPUs |
 |-------------|--------|------|
 | `config_MI355X_1x8x1.sh` | MI355X | 1 node × 8 GPUs |
+| `config_B200_1x8x1.sh` | B200 | 1 node × 8 GPUs |
 
 ```bash
 source config_MI355X_1x8x1.sh
@@ -139,5 +140,3 @@ gpt-oss-20b/primus/
 ├── Dockerfile.nvidia           # Dockerfile (B200 - NVIDIA)
 └── requirements.txt            # Python dependencies (includes primus-mllog)
 ```
-
-
