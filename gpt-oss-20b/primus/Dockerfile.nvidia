@@ -1,0 +1,31 @@
+ARG BASE_IMAGE=nvcr.io/nvidia/pytorch:25.12-py3
+FROM ${BASE_IMAGE}
+
+WORKDIR /workspace
+
+RUN pip install --no-cache-dir \
+    pyyaml \
+    pybind11 \
+    ninja \
+    packaging \
+    transformers
+
+WORKDIR /workspace/deps
+RUN git clone --recursive https://github.com/AMD-AIG-AIMA/Primus.git && \
+    cd Primus && \
+    git checkout 6014259525111fa70e531631cf03d53a656855b9 && \
+    git submodule update --init --recursive && \
+    pip install -r requirements.txt
+
+RUN cd /workspace/deps/Primus/third_party/Megatron-LM && \
+    pip install -e . --no-deps
+
+ENV PYTHONPATH="/workspace/deps/Primus:/workspace/deps/Primus/third_party/Megatron-LM"
+
+WORKDIR /workspace/code
+COPY . .
+
+# Install primus-mllog from local wheel
+RUN pip install primus_mllog-0.1.0-py3-none-any.whl
+
+RUN pip install --no-build-isolation git+https://github.com/fanshiqing/grouped_gemm@v1.1.4

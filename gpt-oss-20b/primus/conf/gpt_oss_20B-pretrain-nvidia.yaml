@@ -1,0 +1,106 @@
+work_group: ${TEAM:nvidia}
+user_name: ${USER:root}
+exp_name: ${EXP_NAME:gpt_oss_20b_nvidia}
+workspace: ./output
+
+modules:
+  pre_trainer:
+    framework: megatron
+    config: pre_trainer.yaml
+
+    # model to run
+    model: ${PRIMUS_MODEL:gpt_oss_20B}.yaml
+    overrides:
+      # log
+      wandb_project: "Primus_GPT_OSS_20B_NVIDIA"
+      stderr_sink_level: DEBUG
+      log_interval: 99999999  # Suppress console logs
+
+      # debug
+      moe_router_force_load_balancing: true
+      log_avg_skip_iterations: 2
+      log_avg_reset_interval: 50
+
+      # profile
+      profile: false
+      use_pytorch_profiler: false
+      profile_step_end: 7
+      profile_step_start: 6
+
+      # precision (mixed precision training)
+      # Using bf16 for B200
+      bf16: true
+      fp16: false
+      fp8: null  # Disabled - using bf16 instead
+
+      # hyper parameters
+      train_iters: ${PRIMUS_TRAIN_ITERS:20000}
+      micro_batch_size: ${PRIMUS_MICRO_BATCH_SIZE:2}
+      global_batch_size: ${PRIMUS_GLOBAL_BATCH_SIZE:16}
+      seq_length: ${PRIMUS_SEQ_LENGTH:8192}
+      max_position_embeddings: ${PRIMUS_MAX_POSITION_EMBEDDINGS:8192}
+      lr: ${PRIMUS_LR:8.0e-4}
+      min_lr: 8.0e-5  # Set to 10% of max LR
+      lr_warmup_iters: ${PRIMUS_LR_WARMUP_ITERS:128}
+      lr_decay_iters: 1199872
+      lr_decay_style: cosine
+      weight_decay: 0.1
+      adam_beta1: 0.9
+      adam_beta2: 0.95
+      eod_mask_loss: true
+      init_method_std: 0.008
+      norm_epsilon: 1.0e-6
+
+      # parallel
+      tensor_model_parallel_size: ${PRIMUS_TP:1}
+      pipeline_model_parallel_size: ${PRIMUS_PP:1}
+      expert_model_parallel_size: ${PRIMUS_EP:8}
+      overlap_grad_reduce: true
+      overlap_param_gather: true
+
+      # data
+      mock_data: false
+      train_data_path: "10 /data/c4-train.en_6_text_document"
+      valid_data_path: "/data/c4-validation-91205-samples.en_text_document"
+      test_data_path: "/data/c4-validation-91205-samples.en_text_document"
+
+      # fusion (standard Megatron optimizations)
+      moe_permute_fusion: false
+      gradient_accumulation_fusion: false
+      moe_grouped_gemm: false  # Disable grouped_gemm requirement
+      moe_use_legacy_grouped_gemm: false
+      moe_use_fused_router_with_aux_score: false
+      multi_latent_attention: false
+      apply_rope_fusion: false
+
+      # MoE router configuration
+      moe_shared_expert_overlap: false
+      moe_router_dtype: fp32
+
+      # ckpt
+      finetune: false
+      auto_continue_train: false
+      load: null
+      no_load_optim: null
+      no_load_rng: null
+      save: null
+      save_interval: 20000
+      no_save_optim: null
+      no_save_rng: null
+      disable_last_saving: true
+      exit_on_missing_checkpoint: false
+      ckpt_format: torch
+      eval_iters: 64  # 64 iters × 2 MBS × 8 GPUs = 1024 eval samples
+      eval_interval: ${PRIMUS_EVAL_INTERVAL:768}
+
+      # Turbo features disabled for NVIDIA
+      enable_primus_turbo: false
+      use_turbo_attention: false
+      use_turbo_grouped_mlp: false
+
+      use_turbo_deepep: false
+      turbo_deepep_num_cu: 0
+      turbo_deepep_use_comm_stream: false
+
+      turbo_sync_free_moe_stage: 0
+

@@ -3,3 +3,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 single_stage_detector/mlcube/workspace/*
+
+# Dev folder
+dev/
+output/
