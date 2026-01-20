@@ -95,7 +95,7 @@ Validation loss (log perplexity)
 
 ## Quality Target
 
-Validation log perplexity = **3.3**
+Validation log perplexity = **3.3** [TO BE REVISITED]
 
 ## Evaluation Frequency
 
