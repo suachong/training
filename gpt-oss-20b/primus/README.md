@@ -93,10 +93,6 @@ After completion, logs will be available under `$LOGDIR`.
 
 Validation loss (log perplexity)
 
-## Quality Target
-
-Validation log perplexity = **3.3** [TO BE REVISITED]
-
 ## Evaluation Frequency
 
 Evaluation every **768 iterations** (12,288 samples with GBS=16)
