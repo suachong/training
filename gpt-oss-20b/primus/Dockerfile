@@ -1,26 +1,44 @@
-# ARG BASE_IMAGE=rocm/pytorch:rocm7.0_ubuntu22.04_py3.10_pytorch_release_2.8.0
+#
+# Copyright (c) 2026, Advanced Micro Devices, Inc. All rights reserved.
+#
+# MIT License
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+#
+
 ARG BASE_IMAGE=docker.io/rocm/primus:v25.11
 FROM ${BASE_IMAGE}
 
-# Set working directory
 WORKDIR /workspace/deps
 
-# Clone Primus repository (remove existing if present in base image)
 RUN rm -rf Primus && \
     git clone --recursive https://github.com/AMD-AIG-AIMA/Primus.git && \
     cd Primus && \
-    # main branch with evaluation bug fix 
     git checkout 85c51c0da12f7d9b819f944eba9ffeb313795b9a && \
     git submodule update --init --recursive && \
     pip install -r requirements.txt
 
-# Build Megatron C++ extensions (required for dataset helpers)
 RUN cd /workspace/deps/Primus/third_party/Megatron-LM && \
     pip install -e . --no-deps
 
 WORKDIR /workspace/code
-# Copy the current state of the code inside the image
+
 COPY . .
 
-# Install primus-mllog from local wheel
 RUN pip install primus_mllog-0.1.0-py3-none-any.whl
