@@ -28,7 +28,6 @@ export PRIMUS_MICRO_BATCH_SIZE=2
 export PRIMUS_GLOBAL_BATCH_SIZE=16
 export PRIMUS_LR=8e-4
 export PRIMUS_TRAIN_ITERS=20000      # 20K iters × 16 GBS = 320K samples
-export SEED=30279
 
 # Evaluation frequency (sample-based, adjusts automatically with GBS)
 export EVAL_SAMPLES_INTERVAL=12288   # Evaluate every 12,288 samples

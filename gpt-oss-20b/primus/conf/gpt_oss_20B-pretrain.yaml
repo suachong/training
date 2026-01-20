@@ -38,6 +38,7 @@ modules:
       global_batch_size: ${PRIMUS_GLOBAL_BATCH_SIZE:640}
       seq_length: ${PRIMUS_SEQ_LENGTH:8192}
       max_position_embeddings: ${PRIMUS_MAX_POSITION_EMBEDDINGS:8192}
+      seed: ${SEED:1234} 
       lr: ${PRIMUS_LR:1.0e-5}
       min_lr: 1.0e-5  # Set to 10% of max LR like Llama 8B (8e-5 is 10% of 8e-4)
       lr_warmup_iters: ${PRIMUS_LR_WARMUP_ITERS:128}  # Match Llama 8B warmup
