@@ -11,6 +11,7 @@ export PRIMUS_PATH=/workspace/deps/Primus
 export PYTHONPATH="${PRIMUS_PATH}:${PRIMUS_PATH}/third_party/Megatron-LM:${PYTHONPATH}"
 export EXP=/workspace/code/conf/gpt_oss_20B-pretrain-nvidia.yaml
 export DATA_PATH=/data
+export MODEL=/model
 
 export PRIMUS_MICRO_BATCH_SIZE=2
 export PRIMUS_GLOBAL_BATCH_SIZE=16

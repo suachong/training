@@ -33,6 +33,7 @@ cd $SCRIPT_DIR
 : "${DGXSYSTEM:?DGXSYSTEM not set}"
 : "${CONT:?CONT not set}"
 : "${DATADIR:?DATADIR not set}"
+: "${MODELDIR:?MODELDIR not set}"
 : "${LOGDIR:?LOGDIR not set}"
 
 # Vars with defaults
@@ -52,7 +53,7 @@ cd $SCRIPT_DIR
 readonly _config_file="./config_${DGXSYSTEM}.sh"
 readonly _logfile_base="${LOGDIR}/${DATESTAMP}"
 readonly _cont_name="${CONT_NAME}"
-_cont_mounts=("--volume=${DATADIR}:/data" "--volume=$(pwd):/workspace/code" "--volume=$(pwd)/../../AMD:/workspace/AMD" "--volume=${UTILITIES}:/workspace/utilities" "--volume=${LOGDIR}:/results")
+_cont_mounts=("--volume=${DATADIR}:/data" "--volume=${MODELDIR}:/model" "--volume=$(pwd):/workspace/code" "--volume=$(pwd)/../../AMD:/workspace/AMD" "--volume=${UTILITIES}:/workspace/utilities" "--volume=${LOGDIR}:/results")
 
 
 # Setup directories
@@ -62,6 +63,8 @@ mkdir -p "${LOGDIR}/artifacts/"
 # Get list of envvars to pass to docker
 mapfile -t _config_env < <(env -i bash -c ". ${_config_file} && compgen -e" | grep -E -v '^(PWD|SHLVL)')
 _config_env+=(DATADIR)
+_config_env+=(MODELDIR)
+_config_env+=(MODEL)
 _config_env+=(DGXSYSTEM)
 _config_env+=(PROFILER)
 _config_env+=(LOGDIR)

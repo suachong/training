@@ -13,7 +13,7 @@ RUN pip install --no-cache-dir \
 WORKDIR /workspace/deps
 RUN git clone --recursive https://github.com/AMD-AIG-AIMA/Primus.git && \
     cd Primus && \
-    git checkout 85c51c0da12f7d9b819f944eba9ffeb313795b9a && \
+    git checkout 82723988c2f4b5440f632a1f99eb9c742b7ef97c && \
     git submodule update --init --recursive && \
     pip install -r requirements.txt
 

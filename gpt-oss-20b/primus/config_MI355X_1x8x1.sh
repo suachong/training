@@ -43,6 +43,7 @@ export PRIMUS_PATH=/workspace/deps/Primus
 export PYTHONPATH="${PRIMUS_PATH}:${PRIMUS_PATH}/third_party/Megatron-LM:${PYTHONPATH}"
 export EXP=/workspace/code/conf/gpt_oss_20B-pretrain.yaml
 export DATA_PATH=/data
+export MODEL=/model
 
 # -----------------------------------------------------------------------------
 # Training Hyperparameters

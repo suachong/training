@@ -47,9 +47,9 @@ Set the directory for data and results. Ensure `$LOGDIR` has write access.
 
 ```bash
 export DATADIR=/data/gpt_oss_20b/data
+export MODELDIR=/data/gpt_oss_20b/model
 export LOGDIR=/data/gpt_oss_20b/results
 export CONT=rocm/amd-mlperf:gpt_oss_20b_training_5.1
-export HF_TOKEN=<your HF token>
 
 # Create results directory
 mkdir -p $LOGDIR
