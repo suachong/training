@@ -71,18 +71,25 @@ source config_MI355X_1x8x1.sh
 
 ## Launch Training
 
-### Single Run
+### Docker
+#### Single Run
 
 ```bash
 export NEXP=1
 bash run_with_docker.sh
 ```
 
-### Multiple Runs (for submission)
+#### Multiple Runs (for submission)
 
 ```bash
 export NEXP=10
 bash run_with_docker.sh
+```
+
+### SLURM
+
+```bash
+sbatch -A <account> -p <partition> -t <time_limit> run.sub
 ```
 
 After completion, logs will be available under `$LOGDIR`.
