@@ -21,13 +21,11 @@ PYXIS_DEFAULTS=( '--no-container-mount-home' '--container-remap-root' '--contain
 : "${MASTER_PORT:=29501}"
 export MASTER_PORT
 export MASTER_ADDR="$(scontrol show hostnames "${SLURM_JOB_NODELIST-}" | head -n1)"
+echo "using MASTER_ADDR \"${MASTER_ADDR}\" of list \"${SLURM_JOB_NODELIST}\""
+
 readonly _cont_name="gpt_oss_20b_${SLURM_JOB_ID}"
 readonly _logfile_base="${LOGDIR}/${DATESTAMP}"
 _cont_mounts="${DATADIR}:/data,${LOGDIR}:/results,${MODELDIR}:/model"
-
-export MASTER_ADDR="$(scontrol show hostnames "${SLURM_JOB_NODELIST-}" | head -n1)"
-echo "using MASTER_ADDR \"${MASTER_ADDR}\" of list \"${SLURM_JOB_NODELIST}\""
-
 
 cleanup_pyxis() {
     srun --ntasks-per-node=1 /bin/bash -c 'if [[ "$(enroot list)" ]]; then enroot remove -f $(enroot list); fi'
