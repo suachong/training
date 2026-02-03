@@ -43,14 +43,13 @@ start=$(date +%s)
 start_fmt=$(date +%Y-%m-%d\ %r)
 echo "STARTING TIMING RUN AT $start_fmt"
 
-
-if [[ ${LOCAL_WORLD_SIZE} -gt 1 ]]; then
-    # Mode 1: Slurm launched a task for each GPU and set some envvars
+if [[ ${LOCAL_WORLD_SIZE:-1} -gt 1 ]]; then
+    echo "Running with SLURM"
     python -u src/train.py
-else
-    
-    # Launch distributed training
-    torchrun 
+else    
+    echo "Running with docker"
+
+    torchrun \
         --nproc_per_node=${GPUS_PER_NODE} \
         --nnodes=${NNODES} \
         --node_rank=${NODE_RANK} \
