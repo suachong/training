@@ -45,8 +45,7 @@ for _experiment_index in $(seq 1 "${NEXP}"); do
         # Run experiment
         export SEED=$(($SEED_BASE - 1 + 10#$_experiment_index))
         srun -l --mpi="${SLURM_MPI_TYPE:-pmix}" \
-             --ntasks-per-node=1 \
-             --time="${WALLTIME}" \
+             --ntasks-per-node=${GPUS_PER_NODE} \
              --container-name="${_cont_name}" "${PYXIS_DEFAULTS[@]}" \
              --container-mounts="${_cont_mounts}" \
              --container-env=MASTER_PORT,MASTER_ADDR \
