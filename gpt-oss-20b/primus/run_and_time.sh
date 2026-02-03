@@ -43,14 +43,22 @@ start=$(date +%s)
 start_fmt=$(date +%Y-%m-%d\ %r)
 echo "STARTING TIMING RUN AT $start_fmt"
 
-# Launch distributed training
-torchrun \
-    --nproc_per_node=${GPUS_PER_NODE} \
-    --nnodes=${NNODES} \
-    --node_rank=${NODE_RANK} \
-    --master_addr=${MASTER_ADDR} \
-    --master_port=${MASTER_PORT} \
-    src/train.py
+
+if [[ ${LOCAL_WORLD_SIZE} -gt 1 ]]; then
+    # Mode 1: Slurm launched a task for each GPU and set some envvars
+    python -u src/train.py
+else
+    
+    # Launch distributed training
+    torchrun 
+        --nproc_per_node=${GPUS_PER_NODE} \
+        --nnodes=${NNODES} \
+        --node_rank=${NODE_RANK} \
+        --master_addr=${MASTER_ADDR} \
+        --master_port=${MASTER_PORT} \
+        src/train.py
+fi
+
 
 ret_code=$?
 
