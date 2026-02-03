@@ -55,7 +55,6 @@ srun --ntasks-per-node=1 --container-image="${CONT}" --container-name="${_cont_n
 for _experiment_index in $(seq 1 "${NEXP}"); do
     (
         # Run experiment
-        export NV_MLPERF_DEBUG=1
         export SEED=$(($SEED_BASE - 1 + 10#$_experiment_index))
         srun -l --mpi="${SLURM_MPI_TYPE:-pmix}" \
              --ntasks-per-node=1 \
