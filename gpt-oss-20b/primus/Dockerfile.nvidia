@@ -29,3 +29,4 @@ COPY . .
 RUN pip install primus_mllog-0.1.0-py3-none-any.whl
 
 RUN pip install --no-build-isolation git+https://github.com/fanshiqing/grouped_gemm@v1.1.4
+RUN pip install --no-build-isolation git+https://github.com/NVIDIA/mlperf-common.git@b86d175a05849d650a8ff69c1e2c37b9f4e61d51
