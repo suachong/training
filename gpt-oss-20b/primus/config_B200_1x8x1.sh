@@ -15,8 +15,11 @@ export MODEL=/model
 
 export PRIMUS_MICRO_BATCH_SIZE=2
 export PRIMUS_GLOBAL_BATCH_SIZE=16
-export PRIMUS_LR=8e-4
-export PRIMUS_TRAIN_ITERS=20000
+export PRIMUS_LR=8.0e-4
+export PRIMUS_MIN_LR=8.0e-5             # Set to 10% of max LR
+export PRIMUS_TRAIN_ITERS=1200000       # 1.2M iters × 16 GBS = 19.2B samples
+export PRIMUS_LR_WARMUP_ITERS=128
+export PRIMUS_LR_DECAY_ITERS=$((PRIMUS_TRAIN_ITERS-PRIMUS_LR_WARMUP_ITERS))
 
 # Evaluation frequency (sample-based, adjusts automatically with GBS)
 export EVAL_SAMPLES_INTERVAL=12288   # Evaluate every 12,288 samples

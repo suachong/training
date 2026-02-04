@@ -12,14 +12,9 @@ modules:
     model: ${PRIMUS_MODEL:gpt_oss_20B}.yaml
     overrides:
       # log
-      wandb_project: "Primus_DeepSeek_Pretrain"
+      wandb_project: "Primus_GPT_OSS_20B"
       stderr_sink_level: DEBUG
       log_interval: 99999999  # Suppress console logs
-
-      # debug
-      moe_router_force_load_balancing: true
-      log_avg_skip_iterations: 2
-      log_avg_reset_interval: 50
 
       # profile
       profile: false
@@ -33,23 +28,28 @@ modules:
       fp8: null  # Set to "e4m3" or "hybrid" for FP8 training
 
       # hyper parameters
-      train_iters: ${PRIMUS_TRAIN_ITERS:20}
-      micro_batch_size: ${PRIMUS_MICRO_BATCH_SIZE:4}
-      global_batch_size: ${PRIMUS_GLOBAL_BATCH_SIZE:640}
+      train_iters: ${PRIMUS_TRAIN_ITERS:1200000}
+      micro_batch_size: ${PRIMUS_MICRO_BATCH_SIZE:2}
+      global_batch_size: ${PRIMUS_GLOBAL_BATCH_SIZE:16}
       seq_length: ${PRIMUS_SEQ_LENGTH:8192}
       max_position_embeddings: ${PRIMUS_MAX_POSITION_EMBEDDINGS:8192}
       seed: ${SEED:1234} 
-      lr: ${PRIMUS_LR:1.0e-5}
-      min_lr: 1.0e-5  # Set to 10% of max LR like Llama 8B (8e-5 is 10% of 8e-4)
-      lr_warmup_iters: ${PRIMUS_LR_WARMUP_ITERS:128}  # Match Llama 8B warmup
-      lr_decay_iters: 1199872  # Match Llama 8B decay schedule (75M samples / 640 GBS = 117187 iters, but using their value)
+      lr: ${PRIMUS_LR:8.0e-4}  # Reduced from 8e-4 for FP8 stability
+      min_lr: ${PRIMUS_MIN_LR:8.0e-5}  # Set to 10% of max LR
+      lr_warmup_iters: ${PRIMUS_LR_WARMUP_ITERS:128}
+      lr_decay_iters: ${PRIMUS_LR_DECAY_ITERS:1199872}
       lr_decay_style: cosine
       weight_decay: 0.1
       adam_beta1: 0.9
       adam_beta2: 0.95
+      adam_eps: 1.0e-5
       eod_mask_loss: true
       init_method_std: 0.008
       norm_epsilon: 1.0e-6
+      
+      # Dropout (disabled for training)
+      hidden_dropout: 0.0
+      attention_dropout: 0.0
 
       # parallel
       tensor_model_parallel_size: ${PRIMUS_TP:1}
@@ -96,8 +96,8 @@ modules:
       disable_last_saving: true
       exit_on_missing_checkpoint: false
       ckpt_format: torch
-      eval_iters: 64  # 64 iters × 2 MBS × 8 GPUs = 1024 eval samples (matching Llama 8B)
-      eval_interval: ${PRIMUS_EVAL_INTERVAL:5}
+      eval_iters: 64  # 64 iters × 2 MBS × 8 GPUs = 1024 eval samples
+      eval_interval: ${PRIMUS_EVAL_INTERVAL:768}
 
       # Turbo
       enable_primus_turbo: true
