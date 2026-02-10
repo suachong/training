@@ -1,0 +1,63 @@
+diff --git a/megatron/core/models/gpt/gpt_model.py b/megatron/core/models/gpt/gpt_model.py
+index a75ab8794..a95c81ae6 100644
+--- a/megatron/core/models/gpt/gpt_model.py
++++ b/megatron/core/models/gpt/gpt_model.py
+@@ -169,16 +169,16 @@ class GPTModel(LanguageModule):
+                 rotary_interleaved=self.config.rotary_interleaved,
+                 seq_len_interpolation_factor=seq_len_interpolation_factor,
+                 rotary_base=rotary_base,
+-                scaling_factor=getattr(self.config, "yarn_rotary_scaling_factor"),
++                scaling_factor=getattr(self.config, "yarn_rotary_scaling_factor", 1.0),
+                 original_max_position_embeddings=getattr(
+-                    self.config, "yarn_original_max_position_embeddings"
++                    self.config, "yarn_original_max_position_embeddings", 4096
+                 ),
+-                beta_fast=getattr(self.config, "yarn_beta_fast"),
+-                beta_slow=getattr(self.config, "yarn_beta_slow"),
+-                mscale=getattr(self.config, "yarn_mscale"),
+-                mscale_all_dim=getattr(self.config, "yarn_mscale_all_dim"),
++                beta_fast=getattr(self.config, "yarn_beta_fast", 32.0),
++                beta_slow=getattr(self.config, "yarn_beta_slow", 1.0),
++                mscale=getattr(self.config, "yarn_mscale", 1.0),
++                mscale_all_dim=getattr(self.config, "yarn_mscale_all_dim", 0.0),
+                 correction_range_round_to_int=getattr(
+-                    self.config, "yarn_correction_range_round_to_int"
++                    self.config, "yarn_correction_range_round_to_int", True
+                 ),
+                 use_cpu_initialization=self.config.use_cpu_initialization,
+             )
+diff --git a/megatron/core/transformer/transformer_config.py b/megatron/core/transformer/transformer_config.py
+index 88da73641..3e834db86 100644
+--- a/megatron/core/transformer/transformer_config.py
++++ b/megatron/core/transformer/transformer_config.py
+@@ -177,6 +177,30 @@ class TransformerConfig(ModelParallelConfig):
+     """True is rotate pairs of even and odd dimensions (RoFormer style), False is rotate pairs of
+     first half and second half (LLaMa style). Default to False."""
+ 
++    ####################
++    # YARN RoPE parameters (for position_embedding_type: yarn)
++    ####################
++    yarn_rotary_scaling_factor: Optional[float] = None
++    """Scaling factor for Yarn RoPE. Used when position_embedding_type is 'yarn'."""
++
++    yarn_original_max_position_embeddings: Optional[int] = None
++    """Original maximum position embeddings length for Yarn RoPE. Used when position_embedding_type is 'yarn'."""
++
++    yarn_beta_fast: Optional[float] = None
++    """Fast beta value for Yarn RoPE. Used when position_embedding_type is 'yarn'."""
++
++    yarn_beta_slow: Optional[float] = None
++    """Slow beta value for Yarn RoPE. Used when position_embedding_type is 'yarn'."""
++
++    yarn_mscale: Optional[float] = None
++    """Mscale value for Yarn RoPE. Used when position_embedding_type is 'yarn'."""
++
++    yarn_mscale_all_dim: Optional[float] = None
++    """Mscale all dim value for Yarn RoPE. Used when position_embedding_type is 'yarn'."""
++
++    yarn_correction_range_round_to_int: Optional[bool] = None
++    """Whether to round dim range bounds to integer for Yarn RoPE. Used when position_embedding_type is 'yarn'."""
++
+     window_size: Optional[Tuple[int, int]] = None
+     """If not None, then will use sliding window attention. The size of the window is specified by
+     the numbers inside the tuple; -1 is special value meaning "infinite window size"."""

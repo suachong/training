@@ -15,8 +15,8 @@ export MODEL=/model
 
 export PRIMUS_MICRO_BATCH_SIZE=2
 export PRIMUS_GLOBAL_BATCH_SIZE=16
-export PRIMUS_LR=8.0e-4
-export PRIMUS_MIN_LR=8.0e-5             # Set to 10% of max LR
+export PRIMUS_LR=4.0e-4
+export PRIMUS_MIN_LR=4.0e-5             # Set to 10% of max LR
 export PRIMUS_TRAIN_ITERS=1200000       # 1.2M iters × 16 GBS = 19.2B samples
 export PRIMUS_LR_WARMUP_ITERS=128
 export PRIMUS_LR_DECAY_ITERS=$((PRIMUS_TRAIN_ITERS-PRIMUS_LR_WARMUP_ITERS))
@@ -49,8 +49,8 @@ export PRIMUS_EP=8
 
 export ENABLE_MLLOG=1
 export MLLOG_OUTPUT_FILE=/results/mlperf_output.log
-export MLLOG_TRAIN_LOSS_LOG_FREQ=1
-export MLLOG_TARGET_EVAL_LOSS=3.3
+export MLLOG_TRAIN_LOSS_LOG_FREQ=32
+export MLLOG_TARGET_EVAL_LOSS=3.2
 export MLLOG_SUBMISSION_BENCHMARK=gpt-oss-20b
 export MLLOG_SUBMISSION_DIVISION=closed
 export MLLOG_SUBMISSION_ORG=NVIDIA

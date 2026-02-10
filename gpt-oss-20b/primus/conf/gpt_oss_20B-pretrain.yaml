@@ -11,6 +11,37 @@ modules:
     # model to run
     model: ${PRIMUS_MODEL:gpt_oss_20B}.yaml
     overrides:
+
+      # tokenizer
+      tokenizer_type: Llama3Tokenizer
+      tokenizer_model: ${MODEL:meta-llama/Llama-3.1-8B}
+
+      # model
+      num_layers: 24
+      hidden_size: 2880
+      ffn_hidden_size: 2880
+      num_attention_heads: 64
+      num_query_groups: 8  
+      num_experts: 32
+      activation_func: swiglu  
+
+      # rotary
+      # add_position_embedding: true  #(uncomment to use yarn)
+      position_embedding_type: rope #yarn 
+
+      # default yarn RoPE parameters
+      yarn_rotary_scaling_factor: 32.0
+      yarn_original_max_position_embeddings: 4096
+      yarn_beta_fast: 32.0
+      yarn_beta_slow: 1.0
+      yarn_mscale: 1.0
+      yarn_mscale_all_dim: 0.0
+      yarn_correction_range_round_to_int: true
+      rotary_base: 150000
+
+      # mixed-precision
+      attention_softmax_in_fp32: false
+
       # log
       wandb_project: "Primus_GPT_OSS_20B"
       stderr_sink_level: DEBUG
@@ -32,21 +63,24 @@ modules:
       micro_batch_size: ${PRIMUS_MICRO_BATCH_SIZE:2}
       global_batch_size: ${PRIMUS_GLOBAL_BATCH_SIZE:16}
       seq_length: ${PRIMUS_SEQ_LENGTH:8192}
-      max_position_embeddings: ${PRIMUS_MAX_POSITION_EMBEDDINGS:8192}
-      seed: ${SEED:1234} 
-      lr: ${PRIMUS_LR:8.0e-4}  # Reduced from 8e-4 for FP8 stability
-      min_lr: ${PRIMUS_MIN_LR:8.0e-5}  # Set to 10% of max LR
+      max_position_embeddings: ${PRIMUS_MAX_POSITION_EMBEDDINGS:131072}
+      seed: ${SEED:1234}  # Random seed for reproducibility
+      lr: ${PRIMUS_LR:4.0e-4}  # Reduced from 8e-4 for FP8 stability
+      min_lr: ${PRIMUS_MIN_LR:4.0e-5}  # Set to 10% of max LR
       lr_warmup_iters: ${PRIMUS_LR_WARMUP_ITERS:128}
       lr_decay_iters: ${PRIMUS_LR_DECAY_ITERS:1199872}
       lr_decay_style: cosine
       weight_decay: 0.1
+      optimizer: adam
+      use_distributed_optimizer: true # use distributed optimizer 
       adam_beta1: 0.9
       adam_beta2: 0.95
       adam_eps: ${PRIMUS_ADAM_EPS:1.0e-5}
       eod_mask_loss: true
       init_method_std: 0.008
       norm_epsilon: 1.0e-6
-      
+      layernorm_epsilon: 1e-05
+
       # Dropout (disabled for training)
       hidden_dropout: 0.0
       attention_dropout: 0.0
@@ -78,10 +112,54 @@ modules:
       # rope fusion
       apply_rope_fusion: false
 
-      # DeepEP does not support moe_shared_expert_overlap
+      # sliding window attention (matches HF sliding_window: 128)
+      # Pattern: alternating sliding_attention (1) and full_attention (0) for 24 layers
+      # Matches HF layer_types: [sliding_attention, full_attention, ...] x 12
+      # window_size must be a tuple (left_window, right_window) for Transformer Engine
+      # For causal attention: left = past tokens, right = 0 (no future tokens)
+      # HF sliding_window: 128 means 128 past tokens, so use (128, 0)
+      window_size: [128, 0]  # Left window: 128 past tokens, Right: 0 (causal)
+      window_attn_skip_freq: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0]
+
+      # MoE settings
+      moe_apply_probs_on_input: false
+      moe_aux_loss_coeff: 0.0 #0.9
+      moe_deepep_num_sms: 20
+      moe_enable_deepep: false
+      moe_expert_capacity_factor: null
+      moe_extended_tp: false
+      moe_ffn_hidden_size: 2880
+      moe_flex_dispatcher_backend: deepep
+      moe_grouped_gemm: false #true
+      moe_hybridep_num_sms: 16
+      moe_input_jitter_eps: null
+      moe_latent_size: null
+      moe_layer_freq: 1
+      moe_layer_recompute: false
+      moe_pad_expert_input_to_capacity: false
+      moe_per_layer_logging: false
+      moe_router_bias_update_rate: 0.001
+      moe_router_dtype: fp32 # DeepEP only supports float32 probs
+      moe_router_enable_expert_bias: false
+      moe_router_force_load_balancing: false
+      moe_router_fusion: false
+      moe_router_group_topk: null
+      moe_router_load_balancing_type: none
+      moe_router_num_groups: null
+      moe_router_padding_for_fp8: false
+      moe_router_padding_for_quantization: false
+      moe_router_pre_softmax: false
+      moe_router_score_function: softmax
+      moe_router_topk: 4
+      moe_router_topk_limited_devices: null
+      moe_router_topk_scaling_factor: null
+      moe_shared_expert_gate: false
+      moe_shared_expert_intermediate_size: null
       moe_shared_expert_overlap: false
-      # DeepEP only supports float32 probs
-      moe_router_dtype: fp32
+      moe_token_dispatcher_type: alltoall
+      moe_token_drop_policy: probs
+      moe_token_dropping: false
+      moe_z_loss_coeff: null
 
       # ckpt
       finetune: false
@@ -90,7 +168,7 @@ modules:
       no_load_optim: null
       no_load_rng: null
       save: null
-      save_interval: 20000
+      save_interval: 100000
       no_save_optim: null
       no_save_rng: null
       disable_last_saving: true
@@ -101,7 +179,7 @@ modules:
 
       # Turbo
       enable_primus_turbo: true
-      use_turbo_attention: true
+      use_turbo_attention: false
       use_turbo_grouped_mlp: true
 
       # deepep

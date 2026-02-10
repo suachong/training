@@ -34,7 +34,10 @@ RUN rm -rf Primus && \
     git submodule update --init --recursive && \
     pip install -r requirements.txt
 
+WORKDIR /workspace/code/patches
+COPY patches/megatron_yarn_rotary_embedding.patch .
 RUN cd /workspace/deps/Primus/third_party/Megatron-LM && \
+    git apply /workspace/code/patches/megatron_yarn_rotary_embedding.patch && \
     pip install -e . --no-deps
 
 WORKDIR /workspace/code

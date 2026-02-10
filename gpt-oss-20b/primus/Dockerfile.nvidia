@@ -17,12 +17,16 @@ RUN git clone --recursive https://github.com/AMD-AIG-AIMA/Primus.git && \
     git submodule update --init --recursive && \
     pip install -r requirements.txt
 
+WORKDIR /workspace/code/patches
+COPY patches/megatron_yarn_rotary_embedding.patch .
 RUN cd /workspace/deps/Primus/third_party/Megatron-LM && \
+    git apply /workspace/code/patches/megatron_yarn_rotary_embedding.patch && \
     pip install -e . --no-deps
 
 ENV PYTHONPATH="/workspace/deps/Primus:/workspace/deps/Primus/third_party/Megatron-LM"
 
 WORKDIR /workspace/code
+
 COPY . .
 
 # Install primus-mllog from local wheel
