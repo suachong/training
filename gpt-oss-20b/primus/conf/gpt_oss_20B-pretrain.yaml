@@ -26,17 +26,7 @@ modules:
       activation_func: swiglu  
 
       # rotary
-      # add_position_embedding: true  #(uncomment to use yarn)
-      position_embedding_type: rope #yarn 
-
-      # default yarn RoPE parameters
-      yarn_rotary_scaling_factor: 32.0
-      yarn_original_max_position_embeddings: 4096
-      yarn_beta_fast: 32.0
-      yarn_beta_slow: 1.0
-      yarn_mscale: 1.0
-      yarn_mscale_all_dim: 0.0
-      yarn_correction_range_round_to_int: true
+      position_embedding_type: rope
       rotary_base: 150000
 
       # mixed-precision

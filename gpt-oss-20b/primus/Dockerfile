@@ -25,19 +25,18 @@
 ARG BASE_IMAGE=docker.io/rocm/primus:v25.11
 FROM ${BASE_IMAGE}
 
-WORKDIR /workspace/deps
-
-RUN rm -rf Primus && \
-    git clone --recursive https://github.com/AMD-AIG-AIMA/Primus.git && \
-    cd Primus && \
-    git checkout 82723988c2f4b5440f632a1f99eb9c742b7ef97c && \
-    git submodule update --init --recursive && \
-    pip install -r requirements.txt
-
 WORKDIR /workspace/code/patches
-COPY patches/megatron_yarn_rotary_embedding.patch .
+COPY patches/primus_evaluator.patch .
+
+WORKDIR /workspace/deps
+RUN git clone --recursive https://github.com/AMD-AIG-AIMA/Primus.git && \
+    cd Primus && \
+    git checkout main && \
+    git submodule update --init --recursive && \
+    pip install -r requirements.txt && \
+    git apply /workspace/code/patches/primus_evaluator.patch 
+
 RUN cd /workspace/deps/Primus/third_party/Megatron-LM && \
-    git apply /workspace/code/patches/megatron_yarn_rotary_embedding.patch && \
     pip install -e . --no-deps
 
 WORKDIR /workspace/code
