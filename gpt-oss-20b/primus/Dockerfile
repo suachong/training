@@ -27,6 +27,7 @@ FROM ${BASE_IMAGE}
 
 WORKDIR /workspace/code/patches
 COPY patches/primus_evaluator.patch .
+COPY patches/megatron_validation_consumed_samples.patch .
 
 WORKDIR /workspace/deps
 RUN git clone --recursive https://github.com/AMD-AIG-AIMA/Primus.git && \
@@ -37,6 +38,7 @@ RUN git clone --recursive https://github.com/AMD-AIG-AIMA/Primus.git && \
     git apply /workspace/code/patches/primus_evaluator.patch 
 
 RUN cd /workspace/deps/Primus/third_party/Megatron-LM && \
+    git apply /workspace/code/patches/megatron_validation_consumed_samples.patch && \
     pip install -e . --no-deps
 
 WORKDIR /workspace/code
