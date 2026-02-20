@@ -69,7 +69,7 @@ echo "ENDING TIMING RUN AT $end_fmt"
 # Report result
 result=$(( end - start ))
 result_name="GPT_OSS_20B"
-echo "RESULT,$result_name,,$result,AMD,$start_fmt"
+echo "RESULT,$result_name,,$result,$start_fmt"
 
 if [[ $ret_code != 0 ]]; then
     echo "Training failed with exit code: $ret_code"
