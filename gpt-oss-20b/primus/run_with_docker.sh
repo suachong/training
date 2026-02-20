@@ -41,8 +41,7 @@ cd $SCRIPT_DIR
 : "${DATESTAMP:=$(date +'%y%m%d%H%M%S%N')}"
 : "${CLEAR_CACHES:=1}"
 : "${CHECK_COMPLIANCE:=0}"
-: "${MLPERF_RULESET:=5.1.0}"
-: "${UTILITIES:="$(pwd)/../../utilities"}"
+: "${MLPERF_RULESET:=6.0.0}"
 
 : "${CONT_NAME:=dev}"
 : "${NGPU:=1}"
@@ -53,12 +52,11 @@ cd $SCRIPT_DIR
 readonly _config_file="./config_${DGXSYSTEM}.sh"
 readonly _logfile_base="${LOGDIR}/${DATESTAMP}"
 readonly _cont_name="${CONT_NAME}"
-_cont_mounts=("--volume=${DATADIR}:/data" "--volume=${MODELDIR}:/model" "--volume=$(pwd):/workspace/code" "--volume=$(pwd)/../../AMD:/workspace/AMD" "--volume=${UTILITIES}:/workspace/utilities" "--volume=${LOGDIR}:/results")
+_cont_mounts=("--volume=${DATADIR}:/data" "--volume=${MODELDIR}:/model" "--volume=$(pwd):/workspace/code" "--volume=${LOGDIR}:/results")
 
 
 # Setup directories
 mkdir -p "${LOGDIR}"
-mkdir -p "${LOGDIR}/artifacts/"
 
 # Get list of envvars to pass to docker
 mapfile -t _config_env < <(env -i bash -c ". ${_config_file} && compgen -e" | grep -E -v '^(PWD|SHLVL)')
