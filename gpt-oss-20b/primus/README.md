@@ -96,17 +96,21 @@ After completion, logs will be available under `$LOGDIR`.
 
 # 4. Quality Metrics
 
+## Target loss
+
+TBD
+
 ## Quality Metric
 
 Validation loss (log perplexity)
 
 ## Evaluation Frequency
 
-Evaluation every **768 iterations** (12,288 samples with GBS=16)
+Evaluation every **12,288 samples** (768 iterations with GBS=16)
 
 ## Evaluation Thoroughness
 
-We evaluate using **1024 sequences** from the validation dataset.
+We evaluate using **1024 samples** from the validation dataset.
 
 # 5. Model Architecture
 
@@ -126,8 +130,8 @@ We evaluate using **1024 sequences** from the validation dataset.
 | Learning Rate | 8e-4 |
 | LR Schedule | Cosine decay with warmup |
 | Weight Decay | 0.1 |
-| Adam β1, β2 | 0.9, 0.95 |
-| Training Iterations | 20,000 |
+| Adam β1, β2, eps | 0.9, 0.95, 1e-5 |
+| Max Training Iterations | 1,200,000 |
 
 # 7. Directory Structure
 
@@ -143,3 +147,6 @@ gpt-oss-20b/primus/
 ├── Dockerfile.nvidia           # Dockerfile (B200 - NVIDIA)
 └── requirements.txt            # Python dependencies (includes primus-mllog)
 ```
+# 8. Approximnate runtime
+
+TBD
