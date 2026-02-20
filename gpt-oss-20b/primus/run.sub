@@ -18,7 +18,7 @@ set -eux
 : "${LOGDIR:=./results}"
 
 PYXIS_DEFAULTS=( '--no-container-mount-home' '--container-remap-root' '--container-writable' )
-: "${MASTER_PORT:=29501}"
+: "${MASTER_PORT:=29500}"
 export MASTER_PORT
 export MASTER_ADDR="$(scontrol show hostnames "${SLURM_JOB_NODELIST-}" | head -n1)"
 echo "using MASTER_ADDR \"${MASTER_ADDR}\" of list \"${SLURM_JOB_NODELIST}\""
