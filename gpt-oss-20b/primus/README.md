@@ -96,13 +96,13 @@ After completion, logs will be available under `$LOGDIR`.
 
 # 4. Quality Metrics
 
-## Target loss
-
-TBD
-
 ## Quality Metric
 
 Validation loss (log perplexity)
+
+## Target loss
+
+Target loss is 3.34.
 
 ## Evaluation Frequency
 
@@ -149,4 +149,4 @@ gpt-oss-20b/primus/
 ```
 # 8. Approximnate runtime
 
-TBD
+Time to train is ~6.5 hours.
